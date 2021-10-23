@@ -29,9 +29,9 @@ export default function App() {
           options={{
             title: 'Pokemon Details',
             headerStyle: {
-              backgroundColor: COLORS_MAP.red,
+              backgroundColor: '#fff',
             },
-            headerTintColor: '#fff',
+            headerTintColor: '#000',
             headerTitleStyle: { fontWeight: 'bold' },
           }}
           name='pokemonDetails'

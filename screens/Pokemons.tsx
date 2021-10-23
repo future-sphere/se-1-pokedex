@@ -14,6 +14,7 @@ import {
   View,
 } from 'react-native';
 import PokeServices from '../services';
+import { zeroFilled } from '../utils';
 interface Props {}
 
 const POKEMONS_PER_PAGE = 18;
@@ -74,6 +75,8 @@ const PokemonsScreen = (props: Props) => {
         {data
           ? data.map((v, i) => {
               const sprite = `${spritePrefix}${v.name}.png`;
+              const url = v.url.split('/');
+              const number = url[6];
               return (
                 <TouchableOpacity
                   onPress={() =>
@@ -88,6 +91,7 @@ const PokemonsScreen = (props: Props) => {
                   key={i}
                 >
                   <Text style={styles.pokemonName}>{v.name}</Text>
+                  <Text style={styles.idTag}>#{zeroFilled(number)}</Text>
                   <Image
                     style={styles.pokemonSprite}
                     source={{ uri: sprite }}
@@ -109,6 +113,9 @@ const PokemonsScreen = (props: Props) => {
 const { width, height } = Dimensions.get('screen');
 
 const styles = StyleSheet.create({
+  idTag: {
+    fontSize: 10,
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',

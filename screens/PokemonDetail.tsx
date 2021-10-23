@@ -2,6 +2,10 @@ import { RouteProp, useNavigation } from '@react-navigation/core';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import Abilities, { Ability, Move } from '../components/Abilities';
+import Overview from '../components/Overview';
+import Stats from '../components/Stats';
+import { zeroFilled } from '../utils';
 
 type ParamsList = {
   pokemonDetails: {
@@ -47,31 +51,25 @@ const tabs = [
 const PokemonDetailScreen: React.FC<Props> = ({ route }) => {
   const { pokemonName } = route.params;
   const navigation = useNavigation();
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<{
+    types: [];
+    id: string;
+    sprites: any;
+    moves: Move[];
+    abilities: Ability[];
+  } | null>(null);
   const [activeTab, setActiveTab] = useState(tabs[0].key);
 
   useEffect(() => {
     if (pokemonName) {
-      axios
-        .get(`https://pokeapi.co/api/v2/pokemon-species/${pokemonName}`)
-        .then((response) => {
-          const color = response.data.color.name;
-          const lightBackground = ['white', 'yellow', 'pink'];
-          const tintColor = lightBackground.includes(color) ? 'black' : 'white';
-          navigation.setOptions({
-            title: capitalize(pokemonName),
-            headerStyle: {
-              backgroundColor: '#fff',
-              opacity: 0.1,
-            },
-            headerTintColor: '#000',
-          });
+      navigation.setOptions({
+        title: capitalize(pokemonName),
+      });
 
-          axios
-            .get(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`)
-            .then((response) => {
-              setData(response.data);
-            });
+      axios
+        .get(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`)
+        .then((response) => {
+          setData(response.data);
         });
     }
   }, []);
@@ -92,10 +90,20 @@ const PokemonDetailScreen: React.FC<Props> = ({ route }) => {
         />
       </View>
       <View style={styles.tagContainer}>
-        <Text style={styles.tag}>#025</Text>
+        <Text style={styles.tag}>#{zeroFilled(data ? data.id : 0)}</Text>
       </View>
       <Text style={styles.title}>{capitalize(pokemonName)}</Text>
-      <Text>Type: Electric</Text>
+      <Text>
+        Type:{' '}
+        {data?.types.length
+          ? data?.types.map((v: { type: { name: string; url: string } }, i) => (
+              <Text style={{ textTransform: 'capitalize' }} key={i}>
+                {v.type.name}
+                {i === data.types.length - 1 ? null : ','}{' '}
+              </Text>
+            ))
+          : null}
+      </Text>
       <View style={styles.tabContainer}>
         {tabs.map((v) => (
           <Pressable
@@ -117,10 +125,16 @@ const PokemonDetailScreen: React.FC<Props> = ({ route }) => {
           </Pressable>
         ))}
       </View>
+      <View>
+        {activeTab === tabs[0].key ? <Overview /> : null}
+        {activeTab === tabs[1].key ? <Stats /> : null}
+        {activeTab === tabs[2].key ? (
+          <Abilities moves={data?.moves} abilities={data?.abilities} />
+        ) : null}
+      </View>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
