@@ -1,5 +1,12 @@
 import React from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Dimensions,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 export interface Ability {
   ability: {
@@ -23,11 +30,44 @@ interface Props {
 }
 
 const Abilities = ({ abilities, moves }: Props) => {
+  console.log(abilities);
   return (
-    <View>
-      <Text>This is Abilities</Text>
+    <View style={styles.container}>
+      {abilities?.map((v, i) => (
+        <View style={styles.abilityBlock} key={i}>
+          <Text style={styles.abilityText}>{v.ability.name}</Text>
+        </View>
+      ))}
     </View>
   );
 };
+
+const { width, height } = Dimensions.get('screen');
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  abilityBlock: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.4)',
+    padding: 15,
+    width: width / 2 - 20,
+    borderRadius: 10,
+    marginBottom: 10,
+    height: 50,
+  },
+  abilityText: {
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+});
 
 export default Abilities;

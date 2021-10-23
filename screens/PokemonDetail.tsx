@@ -69,6 +69,7 @@ const PokemonDetailScreen: React.FC<Props> = ({ route }) => {
       axios
         .get(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`)
         .then((response) => {
+          console.log(response.data);
           setData(response.data);
         });
     }
