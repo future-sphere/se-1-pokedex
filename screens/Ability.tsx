@@ -1,7 +1,9 @@
 import { RouteProp } from '@react-navigation/core';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import PokemonsGrid from '../components/PokemonsGrid';
+import { PokemonData } from './Pokemons';
 
 type ParamsList = {
   abilityDetails: {
@@ -13,18 +15,50 @@ interface Props {
   route: RouteProp<ParamsList, 'abilityDetails'>;
 }
 
+interface Language {
+  name: string;
+  url: string;
+}
+
 interface AbilityResponse {
   effect_entries: [
     {
       effect: string;
-      language: {
-        name: string;
-        url: string;
-      };
+      language: Language;
       short_effect: string;
     },
   ];
+  names: [
+    {
+      language: Language;
+      name: string;
+    },
+  ];
+  pokemon: [
+    {
+      pokemon: PokemonData;
+    },
+  ];
 }
+
+const languages = [
+  {
+    key: 'ja-Hrkt',
+    icon: '🇯🇵',
+  },
+  {
+    key: 'ko',
+    icon: '🇰🇷',
+  },
+  {
+    key: 'zh-Hans',
+    icon: '🇨🇳',
+  },
+  {
+    key: 'en',
+    icon: '🇺🇸',
+  },
+];
 
 const AbilityScreen = (props: Props) => {
   const url = props.route.params.abilityUrl;
@@ -49,21 +83,52 @@ const AbilityScreen = (props: Props) => {
     abilityLongDescription = entry?.effect;
   }
 
-  console.log(abilityShortDescription);
-  console.log(abilityLongDescription);
-
   return (
     <View>
       <View style={styles.blockContainer}>
         <Text style={styles.shortDesc}>{abilityShortDescription}</Text>
         <Text style={styles.longDesc}>{abilityLongDescription}</Text>
       </View>
-      <Text>Ability Details</Text>
+      <View style={styles.languageContainer}>
+        {languages.map((v) => {
+          const name = data?.names.find((w) => w.language.name === v.key);
+          return (
+            <View style={styles.languageBlock} key={v.key}>
+              <Text>{v.icon}</Text>
+              <Text style={styles.languageText}>{name?.name}</Text>
+            </View>
+          );
+        })}
+      </View>
+      <View style={styles.blockContainer}>
+        <Text>{data?.pokemon?.length} Pokemons that also has this ability</Text>
+      </View>
+      <PokemonsGrid data={data?.pokemon.map((v) => v.pokemon)} />
     </View>
   );
 };
 
+const { width, height } = Dimensions.get('screen');
+
 const styles = StyleSheet.create({
+  languageContainer: {
+    flexDirection: 'row',
+    marginHorizontal: 10,
+  },
+  languageBlock: {
+    width: width / 4 - 12.5,
+    marginRight: 10,
+    padding: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+  },
+  languageText: {
+    fontWeight: '600',
+    marginTop: 5,
+    fontSize: 14,
+  },
   blockContainer: {
     margin: 10,
     padding: 10,
