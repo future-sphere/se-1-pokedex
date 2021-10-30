@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/core';
 import React from 'react';
 import {
   Dimensions,
@@ -5,6 +6,7 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 
@@ -30,13 +32,25 @@ interface Props {
 }
 
 const Abilities = ({ abilities, moves }: Props) => {
-  console.log(abilities);
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       {abilities?.map((v, i) => (
-        <View style={styles.abilityBlock} key={i}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+            navigation.navigate(
+              'abilityDetails' as never,
+              {
+                abilityUrl: v.ability.url,
+              } as never,
+            );
+          }}
+          style={styles.abilityBlock}
+          key={i}
+        >
           <Text style={styles.abilityText}>{v.ability.name}</Text>
-        </View>
+        </TouchableOpacity>
       ))}
     </View>
   );
